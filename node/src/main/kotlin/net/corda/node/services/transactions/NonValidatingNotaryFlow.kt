@@ -1,6 +1,7 @@
 package net.corda.node.services.transactions
 
 import co.paralleluniverse.fibers.Suspendable
+import net.corda.core.flows.NotaryError
 import net.corda.core.flows.NotaryFlow
 import net.corda.core.flows.TransactionParts
 import net.corda.core.identity.Party
@@ -24,9 +25,10 @@ class NonValidatingNotaryFlow(otherSide: Party, service: TrustedAuthorityNotaryS
             when (it) {
                 is FilteredTransaction -> {
                     it.verify()
-                    TransactionParts(it.id, it.filteredLeaves.inputs, it.filteredLeaves.timeWindow)
+                    val notary = it.filteredLeaves.notary
+                    TransactionParts(it.id, it.filteredLeaves.inputs, it.filteredLeaves.timeWindow, notary)
                 }
-                is NotaryChangeWireTransaction -> TransactionParts(it.id, it.inputs, null)
+                is NotaryChangeWireTransaction -> TransactionParts(it.id, it.inputs, null, it.notary)
                 else -> {
                     throw IllegalArgumentException("Received unexpected transaction type: ${it::class.java.simpleName}," +
                             "expected either ${FilteredTransaction::class.java.simpleName} or ${NotaryChangeWireTransaction::class.java.simpleName}")
