@@ -16,7 +16,6 @@ import net.corda.core.messaging.MessageRecipients
 import net.corda.core.messaging.RPCOps
 import net.corda.core.messaging.SingleMessageRecipient
 import net.corda.core.node.CordaPluginRegistry
-import net.corda.core.node.ServiceEntry
 import net.corda.core.node.WorldMapLocation
 import net.corda.core.node.services.*
 import net.corda.core.utilities.NetworkHostAndPort
@@ -163,7 +162,7 @@ class MockNetwork(private val networkSendManuallyPumped: Boolean = false,
                     !mockNet.threadPerNode,
                     id,
                     serverThread,
-                    getNotaryEntry(),
+                    getNotaryIdentity(),
                     myLegalName,
                     database)
                     .start()
@@ -202,8 +201,8 @@ class MockNetwork(private val networkSendManuallyPumped: Boolean = false,
             return InMemoryNetworkMapService(services, platformVersion)
         }
 
-        override fun getNotaryEntry(): PartyAndCertificate? {
-            val defaultIdentity = super.getNotaryEntry()
+        override fun getNotaryIdentity(): PartyAndCertificate? {
+            val defaultIdentity = super.getNotaryIdentity()
             val override = overrideServices?.filter { it.key.type.isNotary() }?.entries?.singleOrNull()
             return if (override == null || defaultIdentity == null)
                 defaultIdentity
