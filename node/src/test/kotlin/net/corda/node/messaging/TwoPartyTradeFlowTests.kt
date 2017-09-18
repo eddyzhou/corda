@@ -546,7 +546,7 @@ class TwoPartyTradeFlowTests {
                           private val notary: NodeInfo,
                           private val assetToSell: StateAndRef<OwnableState>,
                           private val price: Amount<Currency>,
-                          private val anonymous: Boolean) : FlowLogic<SignedTransaction>() {
+                          private val anonymous: Boolean) : InitiatingFlowLogic<SignedTransaction>() {
         @Suspendable
         override fun call(): SignedTransaction {
             val myPartyAndCert = if (anonymous) {
