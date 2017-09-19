@@ -939,7 +939,15 @@ object Crypto {
      * is inappropriate for a supported key factory to produce a private key.
      */
     @JvmStatic
-    fun toSupportedPublicKey(key: PublicKey): PublicKey = decodePublicKey(key.encoded)
+    fun toSupportedPublicKey(key: PublicKey): PublicKey {
+        return when (key) {
+            is BCECPublicKey -> key
+            is BCRSAPublicKey -> key
+            is EdDSAPublicKey -> key
+            is CompositeKey -> key
+            else -> decodePublicKey(key.encoded)
+        }
+    }
 
     /**
      * Convert a private key to a supported implementation. This can be used to convert a SUN's EC key to an BC key.
@@ -950,5 +958,12 @@ object Crypto {
      * is inappropriate for a supported key factory to produce a private key.
      */
     @JvmStatic
-    fun toSupportedPrivateKey(key: PrivateKey): PrivateKey = decodePrivateKey(key.encoded)
+    fun toSupportedPrivateKey(key: PrivateKey): PrivateKey {
+        return when (key) {
+            is BCECPrivateKey -> key
+            is BCRSAPrivateKey -> key
+            is EdDSAPrivateKey -> key
+            else -> decodePrivateKey(key.encoded)
+        }
+    }
 }
