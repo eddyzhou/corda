@@ -64,7 +64,8 @@ class AttachmentResolutionException(attachmentId: SecureHash) : Exception("Attac
 data class TestTransactionDSLInterpreter private constructor(
         override val ledgerInterpreter: TestLedgerDSLInterpreter,
         val transactionBuilder: TransactionBuilder,
-        internal val labelToIndexMap: HashMap<String, Int>
+        internal val labelToIndexMap: HashMap<String, Int>,
+        val mockCordappService: MockCordappService = MockCordappService()
 ) : TransactionDSLInterpreter, OutputStateLookup by ledgerInterpreter {
 
     constructor(
@@ -72,7 +73,6 @@ data class TestTransactionDSLInterpreter private constructor(
             transactionBuilder: TransactionBuilder
     ) : this(ledgerInterpreter, transactionBuilder, HashMap())
 
-    val mockCordappService = MockCordappService()
     val services = object : ServiceHub by ledgerInterpreter.services {
         override fun loadState(stateRef: StateRef) = ledgerInterpreter.resolveStateRef<ContractState>(stateRef)
         override val cordappService: CordappService = mockCordappService
@@ -82,7 +82,8 @@ data class TestTransactionDSLInterpreter private constructor(
             TestTransactionDSLInterpreter(
                     ledgerInterpreter = ledgerInterpreter,
                     transactionBuilder = transactionBuilder.copy(),
-                    labelToIndexMap = HashMap(labelToIndexMap)
+                    labelToIndexMap = HashMap(labelToIndexMap),
+                    mockCordappService = mockCordappService
             )
 
     internal fun toWireTransaction() = transactionBuilder.toWireTransaction(services)
