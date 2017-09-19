@@ -4,6 +4,7 @@ import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner
 import io.github.lukehutch.fastclasspathscanner.scanner.ScanResult
 import net.corda.core.contracts.Contract
 import net.corda.core.contracts.UpgradedContract
+import net.corda.core.cordapp.Cordapp
 import net.corda.core.flows.ContractUpgradeFlow
 import net.corda.core.flows.FlowLogic
 import net.corda.core.flows.InitiatedBy
@@ -14,7 +15,6 @@ import net.corda.core.node.services.CordaService
 import net.corda.core.schemas.MappedSchema
 import net.corda.core.serialization.SerializeAsToken
 import net.corda.core.utilities.loggerFor
-import net.corda.core.cordapp.Cordapp
 import net.corda.node.internal.classloading.requireAnnotation
 import java.io.File
 import java.io.FileOutputStream
@@ -25,7 +25,6 @@ import java.net.URL
 import java.net.URLClassLoader
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.*
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
@@ -91,7 +90,7 @@ class CordappLoader private constructor(private val cordappJarPaths: List<URL>) 
         private fun createDevCordappJar(scanPackage: String, path: URL, jarPackageName: String): URI {
             val cordappDir = File("build/tmp/generated-test-cordapps")
             cordappDir.mkdirs()
-            val cordappJAR = File(cordappDir, "$scanPackage.jar")
+            val cordappJAR = File(cordappDir, "$scanPackage-${UUID.randomUUID()}.jar")
             logger.info("Generating a test-only cordapp of classes discovered in $scanPackage at $cordappJAR")
             FileOutputStream(cordappJAR).use {
                 JarOutputStream(it).use { jos ->
