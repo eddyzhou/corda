@@ -32,7 +32,7 @@ class CollectSignaturesFlowTests {
 
     @Before
     fun setup() {
-        setCordappPackage("net.corda.testing.contracts")
+        setCordappPackages("net.corda.testing.contracts")
         mockNet = MockNetwork()
         val nodes = mockNet.createSomeNodes(3)
         a = nodes.partyNodes[0]
@@ -46,7 +46,7 @@ class CollectSignaturesFlowTests {
     @After
     fun tearDown() {
         mockNet.stopNodes()
-        unsetCordappPackage()
+        unsetCordappPackages()
     }
 
     private fun registerFlowOnAllNodes(flowClass: KClass<out FlowLogic<*>>) {

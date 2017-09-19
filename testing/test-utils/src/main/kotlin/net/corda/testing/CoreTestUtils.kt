@@ -14,6 +14,7 @@ import net.corda.core.node.NodeInfo
 import net.corda.core.node.services.IdentityService
 import net.corda.core.utilities.*
 import net.corda.finance.contracts.asset.DUMMY_CASH_ISSUER
+import net.corda.node.internal.cordapp.CordappLoader
 import net.corda.node.services.config.configureDevKeyAndTrustStores
 import net.corda.node.services.identity.InMemoryIdentityService
 import net.corda.node.utilities.CertificateAndKeyPair
@@ -165,9 +166,13 @@ fun NodeInfo.chooseIdentity(): Party = legalIdentitiesAndCerts.first().party
  * Set the package to scan for cordapps - this overrides the default behaviour of scanning the cordapps directory
  * @param packageName A package name that you wish to scan for cordapps
  */
-fun setCordappPackage(packageName: String) = System.setProperty("net.corda.node.cordapp.scan.package", packageName)
+fun setCordappPackages(vararg packageNames: String) {
+    CordappLoader.testPackages = packageNames.toList()
+}
 
 /**
  * Unsets the default overriding behaviour of [setCordappPackage]
  */
-fun unsetCordappPackage() = System.clearProperty("net.corda.node.cordapp.scan.package")
+fun unsetCordappPackages() {
+    CordappLoader.testPackages = emptyList()
+}

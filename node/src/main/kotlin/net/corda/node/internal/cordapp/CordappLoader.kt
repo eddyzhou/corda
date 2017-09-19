@@ -64,9 +64,24 @@ class CordappLoader private constructor(private val cordappJarPaths: List<URL>) 
          * @param scanPackage Resolves the JARs that contain scanPackage and use them as the source for
          *                      the classpath scanning.
          */
-        fun createDevMode(scanPackage: String): CordappLoader {
+        fun createDevMode(scanPackage: String) = CordappLoader(createScanPackage(scanPackage))
+
+        /**
+         * Create a dev mode CordappLoader for test environments - sources scan packages from [CordappLoader.testPackages]
+         */
+        fun createWithTestPackages() = CordappLoader(testPackages.flatMap(this::createScanPackage))
+
+        /**
+         * Creates a dev mode CordappLoader intended only to be used in test environments
+         *
+         * @param scanJars Uses the JAR URLs provided for classpath scanning and Cordapp detection
+         */
+        @VisibleForTesting
+        fun createDevMode(scanJars: List<URL>) = CordappLoader(scanJars)
+
+        private fun createScanPackage(scanPackage: String): List<URL> {
             val resource = scanPackage.replace('.', '/')
-            val paths = this::class.java.classLoader.getResources(resource)
+            return this::class.java.classLoader.getResources(resource)
                     .asSequence()
                     .map { path ->
                         if (path.protocol == "jar") {
@@ -76,16 +91,7 @@ class CordappLoader private constructor(private val cordappJarPaths: List<URL>) 
                         }.toURL()
                     }
                     .toList()
-            return CordappLoader(paths)
         }
-
-        /**
-         * Creates a dev mode CordappLoader intended only to be used in test environments
-         *
-         * @param scanJars Uses the JAR URLs provided for classpath scanning and Cordapp detection
-         */
-        @VisibleForTesting
-        fun createDevMode(scanJars: List<URL>) = CordappLoader(scanJars)
 
         private fun createDevCordappJar(scanPackage: String, path: URL, jarPackageName: String): URI {
             val cordappDir = File("build/tmp/generated-test-cordapps")
@@ -106,6 +112,12 @@ class CordappLoader private constructor(private val cordappJarPaths: List<URL>) 
             }
             return cordappJAR.toURI()
         }
+
+        /**
+         * A list of test packages that will be scanned as CorDapps and compiled into CorDapp JARs for use in tests only
+         */
+        @VisibleForTesting
+        var testPackages: List<String> = emptyList()
     }
 
     private fun loadCordapps(): List<Cordapp> {
