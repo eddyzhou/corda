@@ -943,6 +943,7 @@ object Crypto {
         return when (key) {
             is BCECPublicKey -> key
             is BCRSAPublicKey -> key
+            is BCSphincs256PublicKey -> key
             is EdDSAPublicKey -> key
             is CompositeKey -> key
             else -> decodePublicKey(key.encoded)
@@ -962,6 +963,7 @@ object Crypto {
         return when (key) {
             is BCECPrivateKey -> key
             is BCRSAPrivateKey -> key
+            is BCSphincs256PrivateKey -> key
             is EdDSAPrivateKey -> key
             else -> decodePrivateKey(key.encoded)
         }
