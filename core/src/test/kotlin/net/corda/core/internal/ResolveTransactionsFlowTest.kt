@@ -11,11 +11,7 @@ import net.corda.core.transactions.SignedTransaction
 import net.corda.core.utilities.getOrThrow
 import net.corda.core.utilities.sequence
 import net.corda.node.internal.StartedNode
-import net.corda.testing.DUMMY_NOTARY_KEY
-import net.corda.testing.MEGA_CORP
-import net.corda.testing.MEGA_CORP_KEY
-import net.corda.testing.MINI_CORP
-import net.corda.testing.chooseIdentity
+import net.corda.testing.*
 import net.corda.testing.contracts.DummyContract
 import net.corda.testing.node.MockNetwork
 import net.corda.testing.node.MockServices
@@ -41,6 +37,7 @@ class ResolveTransactionsFlowTest {
 
     @Before
     fun setup() {
+        setCordappPackages("net.corda.testing.contracts")
         mockNet = MockNetwork()
         val nodes = mockNet.createSomeNodes()
         a = nodes.partyNodes[0]
@@ -54,6 +51,7 @@ class ResolveTransactionsFlowTest {
     @After
     fun tearDown() {
         mockNet.stopNodes()
+        unsetCordappPackages()
     }
 
     // DOCSTART 1

@@ -79,7 +79,7 @@ open class TransactionBuilder(
             if (state.constraint is AutomaticHashConstraint) {
                 services.cordappService.getContractAttachmentID(state.contract)?.let {
                     state.copy(constraint = HashAttachmentConstraint(it))
-                } ?: state
+                } ?: throw MissingContractAttachments(listOf(state))
             } else {
                 state
             }
