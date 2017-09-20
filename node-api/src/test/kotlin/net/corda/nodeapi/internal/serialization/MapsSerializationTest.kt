@@ -13,10 +13,11 @@ import org.junit.Test
 import org.bouncycastle.asn1.x500.X500Name
 import java.io.ByteArrayOutputStream
 import java.io.NotSerializableException
+import java.util.*
 
 class MapsSerializationTest : TestDependencyInjectionBase() {
     private companion object {
-        val linkedMapClass = linkedMapOf<Any, Any>().javaClass
+        val linkedMapClass = Collections.emptyMap<Any, Any>().javaClass
     }
 
     private val smallMap = mapOf("foo" to "bar", "buzz" to "bull")
@@ -63,7 +64,7 @@ class MapsSerializationTest : TestDependencyInjectionBase() {
     }
 
     @Test
-    fun `check empty map serialises as LinkedHashMap`() {
+    fun `check empty map serialises as Java emptytMap`() {
         val nameID = 0
         val serializedForm = emptyMap<Int, Int>().serialize()
         val output = ByteArrayOutputStream().apply {
@@ -72,7 +73,6 @@ class MapsSerializationTest : TestDependencyInjectionBase() {
             write(nameID)
             write(linkedMapClass.name.toAscii())
             write(Kryo.NOT_NULL.toInt())
-            write(emptyMap<Int, Int>().size)
         }
         assertArrayEquals(output.toByteArray(), serializedForm.bytes)
     }
